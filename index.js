@@ -33,7 +33,11 @@ async function run() {
     // create database & collection
     const productCollection = client.db('noorMart').collection('products');
     const brandCollection = client.db('noorMart').collection('brands');
+    const myCartCollection = client.db('noorMart').collection('mycart');
 
+
+
+    // Product Api CRUD methods Start
 
     // Read all products data from database
     app.get('/products', async (req, res) => {
@@ -41,53 +45,13 @@ async function run() {
       const products = await cursor.toArray();
       res.send(products);
     })
-
-  // Read all brands data from database
-    app.get('/brands', async (req, res) => {
-      const cursor = brandCollection.find();
-      const brands = await cursor.toArray();
-      res.send(brands);
-    })
-
     // Read single products data from database
     app.get('/products/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
       const result = await productCollection.findOne(query);
       res.send(result);
-  })
-
-   // Read single brands data from database
-   app.get('/brands/:id', async (req, res) => {
-    const id = req.params.id;
-      const query = { _id: new ObjectId(id) }
-      const result = await brandCollection.findOne(query);
-      res.send(result);
-  })
-
-  // update single product data
-  app.patch('/products/:id', async (req, res) => {
-    const id = req.params.id;
-    const filter = { _id: new ObjectId(id) }
-    const options = { upsert: true };
-    const  product =req.body;
-    console.log(id, product);
-    const updateProduct = {
-      $set: {
-        imageUrl: product.imageUrl,
-        name: product.name,
-        brand: product.brand,
-        type: product.type,
-        price: product.price,
-        description: product.description,
-        rating: product.rating,
-      }
-  }
-  const result = await productCollection.updateOne(filter, updateProduct, options);
-  res.send(result);
-})
-
-
+    })
     // Post Add product data in database
     app.post('/products', async (req, res) => {
       const newProduct = req.body;
@@ -97,24 +61,83 @@ async function run() {
       res.send(result);
     })
 
-        // Post add brand in database
-        app.post('/brands', async (req, res) => {
-          const newBrand = req.body;
-          console.log(newBrand);
-          const result = await brandCollection.insertOne(newBrand);
-          res.send(result);
-        })
-
-
+    // update single product data
+    app.patch('/products/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true };
+      const product = req.body;
+      console.log(id, product);
+      const updateProduct = {
+        $set: {
+          imageUrl: product.imageUrl,
+          name: product.name,
+          brand: product.brand,
+          type: product.type,
+          price: product.price,
+          description: product.description,
+          rating: product.rating,
+        }
+      }
+      const result = await productCollection.updateOne(filter, updateProduct, options);
+      res.send(result);
+    })
 
     // Delete product data from database
     app.delete('/products/:id', async (req, res) => {
-      const id =req.params.id;
-      console.log('please delete data',id);
-      const query = {_id : new ObjectId(id)}
+      const id = req.params.id;
+      console.log('please delete data', id);
+      const query = { _id: new ObjectId(id) }
       const result = await productCollection.deleteOne(query);
       res.send(result);
     })
+    // Product Api CRUD methods END
+
+
+
+    // Brand API Start
+    // Read all brands data from database
+    app.get('/brands', async (req, res) => {
+      const cursor = brandCollection.find();
+      const brands = await cursor.toArray();
+      res.send(brands);
+    })
+    // Read single brands data from database
+    app.get('/brands/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await brandCollection.findOne(query);
+      res.send(result);
+    })
+    // Post add brand in database
+    app.post('/brands', async (req, res) => {
+      const newBrand = req.body;
+      console.log(newBrand);
+      const result = await brandCollection.insertOne(newBrand);
+      res.send(result);
+    })
+    // Brand API End
+
+
+    //  MyCart Api Start
+    // Post Add mycart data in database
+    app.post('/mycart', async (req, res) => {
+      const addNewCart = req.body;
+      addNewCart.AddDateTime = new Date();
+      console.log(addNewCart);
+      const result = await myCartCollection.insertOne(addNewCart);
+      res.send(result);
+    })
+    // Delete product data from database
+    app.delete('/mycart/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log('please delete data', id);
+      const query = { _id: new ObjectId(id) }
+      const result = await myCartCollection.deleteOne(query);
+      res.send(result);
+    })
+  //  MyCart Api End
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
