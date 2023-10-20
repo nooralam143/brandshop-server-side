@@ -57,8 +57,16 @@ async function run() {
       res.send(result);
   })
 
+   // Read single brands data from database
+   app.get('/brands/:id', async (req, res) => {
+    const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await brandCollection.findOne(query);
+      res.send(result);
+  })
+
   // update single product data
-  app.put('/products/:id', async (req, res) => {
+  app.patch('/products/:id', async (req, res) => {
     const id = req.params.id;
     const filter = { _id: new ObjectId(id) }
     const options = { upsert: true };
@@ -83,6 +91,7 @@ async function run() {
     // Post Add product data in database
     app.post('/products', async (req, res) => {
       const newProduct = req.body;
+      newProduct.submitDateTime = new Date();
       console.log(newProduct);
       const result = await productCollection.insertOne(newProduct);
       res.send(result);
