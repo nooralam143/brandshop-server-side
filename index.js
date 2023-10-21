@@ -128,6 +128,11 @@ async function run() {
       const result = await myCartCollection.insertOne(addNewCart);
       res.send(result);
     })
+    app.get('/mycart', async (req, res) => {
+      const cursor = myCartCollection.find();
+      const myCart = await cursor.toArray();
+      res.send(myCart);
+    })
     // Delete product data from database
     app.delete('/mycart/:id', async (req, res) => {
       const id = req.params.id;
