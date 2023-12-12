@@ -28,12 +28,13 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     // create database & collection
     const productCollection = client.db('noorMart').collection('products');
     const brandCollection = client.db('noorMart').collection('brands');
     const myCartCollection = client.db('noorMart').collection('mycart');
+    const brandSlidersCollection = client.db('noorMart').collection('brandSliders');
 
 
 
@@ -143,6 +144,18 @@ async function run() {
       res.send(result);
     })
   //  MyCart Api End
+
+  //Brand Slidder Api Start
+
+
+  app.post('/add-brand-sliders', async (req, res) => {
+    const addBrandSliders = req.body;
+    addBrandSliders.AddDateTime = new Date();
+    console.log(addBrandSliders);
+    const result = await brandSlidersCollection.insertOne(addBrandSliders);
+    res.send(result);
+  })
+    //Brand Slidder Api END
 
 
     // Send a ping to confirm a successful connection
